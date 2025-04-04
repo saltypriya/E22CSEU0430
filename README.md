@@ -23,3 +23,6 @@ cd Assignment1 or Assignemt 2
 
 ## Output Results
 ![Output](Assignment1(Cal)/output/image.png)
+![Output](Assignment1(Cal)/output/image2.png)
+![Output](Assignment1(Cal)/output/image3.png)
+
