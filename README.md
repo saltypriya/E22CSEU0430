@@ -18,3 +18,4 @@ This Node.js project contains two microservices:
 git clone https://github.com/saltypriya/E22CSEU0430.git
 cd Assignment1 or Assignemt 2
 
+![alt text](image-1.png)
