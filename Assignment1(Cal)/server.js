@@ -18,9 +18,6 @@ const numberCache = {
     random: { current: [], previous: [] }
 };
 
-let authToken = null;
-let tokenExpiryTime = 0;
-
 //predefined apis to fetch different types of numbers
 const numberAPIs = {
     prime: 'http://20.244.56.144/evaluation-service/primes',
@@ -33,9 +30,7 @@ const numberAPIs = {
 //checks for auth token missing or is the token has expired or not then processed to fetch a new token if either is true
 app.use(async (req, res, next) => {
     try {
-        if (!authToken || Date.now() >= tokenExpiryTime) {
-            await requestAuthToken();
-        }
+        await requestAuthToken(); // always fetch new token
         next();
     } catch (error) {
         console.error('Auth Middleware Error:', error.message);
@@ -44,7 +39,7 @@ app.use(async (req, res, next) => {
 });
 
 //request a new auth token from external API
-async function requestAuthToken(retry = false) {
+async function requestAuthToken() {
     const credentials = {
         email: process.env.EMAIL,
         name: process.env.NAME,
@@ -66,16 +61,11 @@ async function requestAuthToken(retry = false) {
             throw new Error(`Auth request failed: ${errorDetails}`);
         }
 
-        const { access_token, expires_in } = await response.json();
-        authToken = access_token;
-        tokenExpiryTime = Date.now() + expires_in * 1000;
+        const { access_token } = await response.json();
+        app.locals.authToken = access_token;
         console.log('Authentication successful. Token acquired.');
     } catch (error) {
-        if (!retry) {
-            console.warn('Retrying authentication...');
-            return requestAuthToken(true);
-        }
-        console.error('Authentication retry failed:', error.message);
+        console.error('Authentication failed:', error.message);
         throw error;
     }
 }
@@ -87,11 +77,11 @@ async function retrieveNumbers(type) {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 500);
 
     try {
         const response = await fetch(numberAPIs[type], {
-            headers: { Authorization: `Bearer ${authToken}` },
+            headers: { Authorization: `Bearer ${app.locals.authToken}` },
             signal: controller.signal
         });
 
