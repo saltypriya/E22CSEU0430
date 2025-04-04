@@ -21,4 +21,4 @@ cd Assignment1 or Assignemt 2
 <img width="960" alt="image" src="https://github.com/user-attachments/assets/e32213b6-d1d0-471b-91ec-3c649e3609cf" />
 
 
-![alt text](image-1.png)
+![Diagram](assets/images/images.png)
